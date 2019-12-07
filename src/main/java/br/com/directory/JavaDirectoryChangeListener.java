@@ -35,15 +35,20 @@ public class JavaDirectoryChangeListener {
                     if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
                         System.out.println(eventDir + ": " + kind + ": " + eventPath);
 
-                        if (eventPath.getFileName().toString().endsWith(".zip")) {
-                            File file = eventPath.toFile();
-                            System.out.println("file: " + file);
+                        File file = eventPath.toFile();
+                        System.out.println("file: " + file);
 
+                        if (eventPath.getFileName().toString().endsWith(".zip")) {
                             File fileZip = new File(eventDir + File.separator + file);
                             System.out.println("fileZip: " + fileZip);
 
-                            unzip(fileZip.getAbsolutePath(), directory);
+                            unzip(fileZip.getAbsolutePath());
                             fileZip.delete();
+                        }
+
+                        if (eventPath.getFileName().toString().endsWith(".xml")) {
+                            File fileXml = new File(eventDir + File.separator + file);
+                            System.out.println("Arquivo xml criado: " + fileXml);
                         }
                     }
                 }
@@ -55,13 +60,13 @@ public class JavaDirectoryChangeListener {
         }
     }
 
-    private static void unzip(String zipFilePath, String destDirectory) throws IOException {
+    private static void unzip(String zipFilePath) throws IOException {
         ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath));
         ZipEntry entry = zipInputStream.getNextEntry();
 
         // iterates entries (xmls)
         while (entry != null) {
-            String filePath = destDirectory + File.separator + entry.getName();
+            String filePath = JavaDirectoryChangeListener.directory + File.separator + entry.getName();
 
             if (!entry.isDirectory()) {
                 extractFile(zipInputStream, filePath);
